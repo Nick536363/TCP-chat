@@ -1,5 +1,4 @@
 #include <sys/socket.h>
-#include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,6 +42,8 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 
+    char buf[4096] = {};
+
     printf("Listening on %s:%d\n", argv[1], int_port);
     if(listen(socket_fd, 1) == -1){
         perror("listen()");
@@ -57,6 +58,8 @@ int main(int argc, char* argv[])
             perror("close()");
         exit(EXIT_FAILURE);
     }
+
+    write(data_fd, "Hello from Server!", sizeof("Hello from Server!"));
 
     if(close(data_fd) == -1)
         perror("close()");

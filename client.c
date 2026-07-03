@@ -1,5 +1,4 @@
 #include <sys/socket.h>
-#include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,8 +45,10 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 
-    if(close(data_fd) == -1)
-        perror("close()");
+    char buf[4096] = {};
+    read(socket_fd, buf, sizeof(buf));
+    printf("server: %s", buf);
+
     if(close(socket_fd) == -1){
         perror("close()");
         exit(EXIT_FAILURE);
