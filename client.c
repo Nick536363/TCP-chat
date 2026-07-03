@@ -39,9 +39,7 @@ int main(int argc, char* argv[])
     server_addr.sin_port = htons(int_port);
     server_addr.sin_addr = ipv4_addr;
 
-    int data_fd = connect(socket_fd, (struct sockaddr*) &server_addr, addr_len);
-
-    if(data_fd == -1){
+    if(connect(socket_fd, (struct sockaddr*) &server_addr, addr_len) == -1){
         perror("connect()");
         if(close(socket_fd) == -1)
             perror("close()");
