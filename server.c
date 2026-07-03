@@ -28,20 +28,38 @@ int main(int argc, char* argv[])
         puts("Address setting error occured!");
         exit(EXIT_FAILURE);
     }
-    uint32_t int_port = atoi(argv[2]);
+    uint16_t int_port = atoi(argv[2]);
+    socklen_t addr_len = sizeof(addr);
     if(int_port == 0){
         puts("Invalid port!");
         exit(EXIT_FAILURE);
     }
     addr.sin_family = AF_INET;
-    addr.sin_port = htonl(int_port);
+    addr.sin_port = htons(int_port);
     addr.sin_addr = ipv4_addr;
 
-    if(bind(socket_fd, (struct sockaddr*) &addr, sizeof(addr)) == -1){
+    if(bind(socket_fd, (struct sockaddr*) &addr, addr_len) == -1){
         perror("bind()");
         exit(EXIT_FAILURE);
     }
 
+    printf("Listening on %s:%d\n", argv[1], int_port);
+    if(listen(socket_fd, 1) == -1){
+        perror("listen()");
+        exit(EXIT_FAILURE);
+    }
+
+    int data_fd = accept(socket_fd, (struct sockaddr*) &addr, &addr_len);
+
+    if(data_fd == -1){
+        perror("accept()");
+        if(close(socket_fd) == -1)
+            perror("close()");
+        exit(EXIT_FAILURE);
+    }
+
+    if(close(data_fd) == -1)
+        perror("close()");
     if(close(socket_fd) == -1){
         perror("close()");
         exit(EXIT_FAILURE);
