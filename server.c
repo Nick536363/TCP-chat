@@ -17,12 +17,14 @@ int main(void)
     
     struct sockaddr_in addr;
     struct in_addr ipv4_addr;
+    
+    memset(&addr, 0, sizeof(addr));
     if(inet_aton("127.0.0.1", &ipv4_addr) == 0){
         puts("Address setting error occured!");
         exit(EXIT_FAILURE);
     }
     addr.sin_family = AF_INET;
-    addr.sin_port = 12345;
+    addr.sin_port = htonl(12345);
     addr.sin_addr = ipv4_addr;
 
     if(bind(socket_fd, (struct sockaddr*) &addr, sizeof(addr)) == -1){
