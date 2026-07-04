@@ -56,15 +56,7 @@ int main(int argc, char* argv[])
             continue;
         }
         printf("server: %s", buf);
-        #if 0
-        while(bytes_read > 0){
-            if((bytes_read = read(socket_fd, buf, sizeof(buf) - 1)) == -1){
-                perror("read()");    
-                continue;
-            }
-            printf("%s", buf);
-        }
-        #endif
+        
         putchar('>');
         fgets(buf, sizeof(buf), stdin);
         if(strcmp("exit\n", buf) == 0){
@@ -72,7 +64,7 @@ int main(int argc, char* argv[])
                 perror("write()");
             break;
         }
-        if(write(socket_fd, buf, sizeof(buf)) == -1)
+        if(write(socket_fd, buf, sizeof(char) * strlen(buf)+1) == -1)
             perror("write()");
     }
 
