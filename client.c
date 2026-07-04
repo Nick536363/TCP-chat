@@ -46,8 +46,35 @@ int main(int argc, char* argv[])
     }
 
     char buf[4096] = {};
-    read(socket_fd, buf, sizeof(buf));
-    printf("server: %s", buf);
+    
+    ssize_t bytes_read = 0;
+    
+    // COMMUNICATION IS UNSTABLE
+    for(;;){
+        if((bytes_read = read(socket_fd, buf, sizeof(buf) - 1)) == -1){
+            perror("read()");    
+            continue;
+        }
+        printf("server: %s", buf);
+        #if 0
+        while(bytes_read > 0){
+            if((bytes_read = read(socket_fd, buf, sizeof(buf) - 1)) == -1){
+                perror("read()");    
+                continue;
+            }
+            printf("%s", buf);
+        }
+        #endif
+        putchar('>');
+        fgets(buf, sizeof(buf), stdin);
+        if(strcmp("exit\n", buf) == 0){
+            if(write(socket_fd, "Client closed connection.", sizeof("Client closed connection.")) == -1)
+                perror("write()");
+            break;
+        }
+        if(write(socket_fd, buf, sizeof(buf)) == -1)
+            perror("write()");
+    }
 
     if(close(socket_fd) == -1){
         perror("close()");

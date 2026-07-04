@@ -59,7 +59,34 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 
-    write(data_fd, "Hello from Server!", sizeof("Hello from Server!"));
+    ssize_t bytes_read = 0;
+    
+    // COMMUNICATION IS UNSTABLE!
+    for(;;){
+        putchar('>');
+        fgets(buf, sizeof(buf), stdin);
+        if(strcmp("exit\n", buf) == 0){
+            if(write(data_fd, "Server closed connection.", sizeof("Server closed connection.")) == -1)
+                perror("write()");
+            break;
+        }
+        if(write(data_fd, buf, sizeof(buf)) == -1)
+            perror("write()");
+        if((bytes_read = read(data_fd, buf, sizeof(buf) - 1)) == -1){
+            perror("read()");    
+            continue;
+        }
+        printf("client: %s", buf);
+        #if 0
+        while(bytes_read > 0){
+            if((bytes_read = read(data_fd, buf, sizeof(buf) - 1)) == -1){
+                perror("read()");    
+                continue;
+            }
+            printf("%s", buf);
+        }
+        #endif
+    }
 
     if(close(data_fd) == -1)
         perror("close()");
